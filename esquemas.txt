@@ -1,0 +1,66 @@
+
+from pydantic import BaseModel
+from typing import Optional
+
+class Usuarioschema(BaseModel):
+    nome: str
+    email: str
+    senha: str
+    ativo: Optional[bool]
+    admin: Optional[bool]
+
+    class Config:
+        from_attributes = True
+
+
+class LoguinSchema(BaseModel):
+    email: str
+    senha: str
+
+    class Config:
+        from_attributes = True
+# ══════════════════════════════════════════════════════════════════════════════
+# COLE ESTES SCHEMAS no seu schemas.py existente (após os schemas já existentes)
+# Adicione também este import no topo: from datetime import datetime
+# ══════════════════════════════════════════════════════════════════════════════
+
+from datetime import datetime
+
+
+# ─── Consent ─────────────────────────────────────────────────────────────────
+
+class ConsentCreateSchema(BaseModel):
+    permissao: str   # ex: "web_search", "send_email", "read_calendar"
+
+    class Config:
+        from_attributes = True
+
+
+class ConsentResponseSchema(ConsentCreateSchema):
+    id:         int
+    id_usuario: int
+    ativo:      bool
+    criado_em:  datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ─── Message ─────────────────────────────────────────────────────────────────
+
+class MessageCreateSchema(BaseModel):
+    conteudo: str   # texto enviado pelo usuário
+
+    class Config:
+        from_attributes = True
+
+
+class MessageResponseSchema(BaseModel):
+    id:         int
+    id_usuario: int
+    role:       str      # "user" | "assistant"
+    conteudo:   str
+    criado_em:  datetime
+
+    class Config:
+        from_attributes = True
