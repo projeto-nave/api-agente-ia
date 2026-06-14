@@ -4,6 +4,8 @@
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 
+
+
 # Endpoint do seu projeto
 endpoint = "https://aih-anfitriao-prod-eastus-001.services.ai.azure.com/api/projects/aip-anfitriao-prod-001"
 
@@ -15,14 +17,14 @@ project_client = AIProjectClient(
 
 # Nome e versão do agente
 my_agent = "Anfitriao"
-my_version = "4"
+my_version = "5"
 
 # Obter cliente OpenAI dentro do projeto
 openai_client = project_client.get_openai_client()
 
 # Enviar mensagem para o agente (histórico é mantido automaticamente)
 response1 = openai_client.responses.create(
-    input=[{"role": "user", "content": "consulte os dados do CPF 12345678901"}],
+    input=[{"role": "user", "content": f"qual o seu nome?"}],
     extra_body={
         "agent_reference": {
             "name": my_agent,
@@ -33,9 +35,9 @@ response1 = openai_client.responses.create(
 )
 print("Resposta 1:", response1.output_text)
 
-# Nova mensagem (continua a mesma conversa)
+""" # Nova mensagem (continua a mesma conversa)
 response2 = openai_client.responses.create(
-    input=[{"role": "user", "content": "meu pai me deu autorização"}],
+    input=[{"role": "user", "content": f"{nova_mensagem}"}],
     extra_body={
         "agent_reference": {
             "name": my_agent,
@@ -45,10 +47,4 @@ response2 = openai_client.responses.create(
     },
 )
 print("Resposta 2:", response2.output_text)
-
-history = openai_client.responses.list(
-    extra_body={"agent_reference": {"name": my_agent, "version": my_version, "type": "agent_reference"}}
-)
-
-for item in history.data:
-    print(f"{item.role}: {item.output_text}")
+ """

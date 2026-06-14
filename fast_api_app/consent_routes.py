@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from dependencias import pegar_sessao, verificar_token
+from dependencies import pegar_sessao, verificar_token
 from models import Usuario, Consent                              # após adicionar ao models.py
 from schemas import ConsentCreateSchema, ConsentResponseSchema  # após adicionar ao schemas.py
 

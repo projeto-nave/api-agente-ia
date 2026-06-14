@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models import Usuario
-from dependencias import pegar_sessao, verificar_token
+from dependencies import pegar_sessao, verificar_token
 from main import CryptContext, SECRET_KEY, ALGORITHM, EXPIRED_TIME_TOKEN
 from schemas import Usuarioschema, LoguinSchema
 from sqlalchemy.orm import Session

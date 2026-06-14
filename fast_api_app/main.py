@@ -20,6 +20,7 @@ app = FastAPI(
 
 CryptContext  = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login-form")
+tela = "tela de teste"
 
 # ── Routers existentes ────────────────────────────────────────────────────────
 from auth_routes        import auth_router

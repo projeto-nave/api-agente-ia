@@ -2,6 +2,7 @@
 from pydantic import BaseModel
 from typing import Optional,List
 
+
 class Usuarioschema(BaseModel):
     nome: str
     email: str
@@ -49,13 +50,14 @@ class ConsentResponseSchema(ConsentCreateSchema):
 # ─── Message ─────────────────────────────────────────────────────────────────
 
 class MessageSchema(BaseModel):
-    role: str  # "user" ou "assistant"
-    conteudo: str
-    enviado_em: datetime = datetime.now()
+    conteudo: str #conteudo da mensagem enviada pelo usuario ou pela ia
+    enviado_em: datetime=datetime.now()  # Data e hora de envio da mensagem
+    class Config:
+        from_attributes = True
 
 class ConversaSchema(BaseModel):
     id_usuario: int
-    conversa: str
+    conversa: str  # Armazenar a conversa como uma string JSON ou outro formato adequado
 
     class Config:
         from_attributes = True
