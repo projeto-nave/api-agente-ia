@@ -1,21 +1,163 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-  <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nave do Conhecimento | Site Fictício</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet" />
-  </head>
-
-  <body>
-  
-    <img src="images/indexNaveConhecimento.png" alt="Site Fictício" style="width:100%; height: auto;">
-
-    <a href="pages/agente.html" target="_blank" class="botao-agente"><img src="images/Agente Nicole - Conversar.png" alt="Conversar com a Agente Nicole" style="z-index: 2;position: fixed;top: calc(100vh - 30%);right: calc(100vw - 99%);"></a> 
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Agente IA</title>
     
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    <style>
+        /* ==========================================================================
+           ESTILO PADRÃO (Inspirado no Totem e na Página do Agente do João)
+           ========================================================================== */
+        :root {
+            --cor-fundo: #0d1117;       /* Fundo escuro tecnológico */
+            --cor-card: #161b22;        /* Fundo dos blocos/totem */
+            --cor-primaria: #58a6ff;    /* Azul dos detalhes e links */
+            --cor-texto: #c9d1d9;       /* Texto claro e confortável */
+            --cor-botao: #238636;       /* Verde de destaque para ação */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Estrutura do Totem / Container Principal */
+        .totem-container {
+            background-color: var(--cor-card);
+            border: 1px solid #30363d;
+            border-radius: 16px; /* Bordas arredondadas padrão totem */
+            width: 100%;
+            max-width: 400px; /* Limita a largura para parecer um totem/tela de celular */
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .header-agente img {
+            width: 80px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #8b949e;
+            margin-bottom: 25px;
+        }
+
+        /* Formulário de Login fictício */
+        .form-grupo {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--cor-texto);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background-color: #0d1117;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--cor-primaria);
+        }
+
+        /* O BOTÃO DE LOGIN SEGUINDO O NÚMERO 1 */
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--cor-botao);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #2ea043;
+        }
+
+        /* ==========================================================================
+           RESPONSIVIDADE (Ajustes automáticos para Celulares)
+           ========================================================================== */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .totem-container {
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: none; /* Em telas muito pequenas ele ocupa o espaço naturalmente */
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="totem-container">
+        
+        <div class="header-agente">
+            <h1>🤖 Agente IA</h1>
+            <p>Seja bem-vindo ao totem de autoatendimento</p>
+        </div>
+
+        <div class="form-grupo">
+            <label for="usuario">Identificação ou E-mail</label>
+            <input type="text" id="usuario" placeholder="Ex: joao.agente">
+        </div>
+
+        <div class="form-grupo">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" placeholder="••••••••">
+        </div>
+
+        <button class="btn-login" onclick="fazerLogin()">1. Acessar Sistema (Login)</button>
+
+    </div>
+
+    <script>
+        // Uma lógica simples para quando você clicar no botão ele fazer algo na tela
+        function fazerLogin() {
+            alert("Simulação de Login executada com sucesso no Totem do Agente!");
+        }
+    </script>
+
+</body>
 </html>
