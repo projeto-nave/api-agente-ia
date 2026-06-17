@@ -33,7 +33,7 @@ class Usuario(Base):
         self.senha = senha
         self.ativo = ativo
         self.admin = admin
-
+        
 # ─── Consent ──────────────────────────────────────────────────────────────────
 class Consent(Base):
     """Permissões do agente de IA concedidas por usuário."""

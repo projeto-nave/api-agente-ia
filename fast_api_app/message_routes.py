@@ -60,7 +60,6 @@ async def menssagens():
 @message_router.post("/menssagens")
 async def menssagen_envio(
     Menssagem_schema: MessageSchema, 
-    background_tasks: BackgroundTasks,
     session: Session = Depends(pegar_sessao), 
     current_user: Usuario = Depends(verificar_token)
 ):

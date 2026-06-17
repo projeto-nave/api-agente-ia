@@ -20,17 +20,16 @@ app = FastAPI(
 
 CryptContext  = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login-form")
+oauth2_scheme_opcional = OAuth2PasswordBearer(tokenUrl="auth/login-form",auto_error=False)
 tela = "tela de teste"
 
 # ── Routers existentes ────────────────────────────────────────────────────────
 from auth_routes        import auth_router
-
-# ── Novos routers do agente de IA ─────────────────────────────────────────────
-from consent_routes import consent_router
 from message_routes import message_router
+from chat_routes import chat_router
 
 app.include_router(auth_router)
-app.include_router(consent_router)
 app.include_router(message_router)
+app.include_router(chat_router)
 
 # para executar: uvicorn main:app --reload
