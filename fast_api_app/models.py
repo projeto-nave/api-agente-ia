@@ -57,10 +57,13 @@ class Message(Base):
     __tablename__ = "messages"
 
     id         = Column("id",         Integer, primary_key=True, autoincrement=True)
-    id_usuario = Column("id_usuario", ForeignKey("usuarios.id"), nullable=False)
+    id_usuario = Column("id_usuario", ForeignKey("usuarios.id"), nullable=True)
+    id_session = Column("id_visitante",String(36), nullable=True )
     conversa   = Column("conversa",   JSON,    nullable=False)
-    criado_em  = Column("criado_em",  DateTime, default=lambda: datetime.now(timezone.utc))
+    criado_em  = Column("criado_em",  DateTime, default= datetime.now(timezone.utc))
 
-    def __init__(self, id_usuario, conversa):
+    def __init__(self, id_usuario, conversa,id_session,criado_em):
         self.id_usuario = id_usuario
+        self.id_session = id_session
         self.conversa   = conversa
+        self.criado_em  = criado_em

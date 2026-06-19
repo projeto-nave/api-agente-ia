@@ -1,97 +1,125 @@
 # message_routes.py
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from dependencies import verificar_token, pegar_sessao
-from schemas import MessageSchema, ConversaSchema
-from models import Message, DB, Usuario
+from fastapi import APIRouter, Depends, HTTPException
+from dependencies import verificar_token_opcional, pegar_sessao, get_session_id
+from schemas import MessageSchema
+from models import Message, Usuario
 from sqlalchemy.orm import Session
 from datetime import datetime
-from azure_agent import AzureFoundryLLM # Importa a função do agente
+from azure_agent import AzureFoundryLLM
+from typing import Optional
 
+message_router = APIRouter(
+    prefix="/messages",
+    tags=["messages"],
+    dependencies=[Depends(verificar_token_opcional)]
+)
 
-message_router = APIRouter(prefix="/messages", tags=["messages"], dependencies=[Depends(verificar_token)])
-
-agente_resp = str
-
-
-def atualizar_conversa(nova_mensagem: dict, current_user: Usuario, session: Session) -> list:
-    """Gera o histórico de mensagens para um usuário específico."""
-    registro = session.query(Message).filter_by(id_usuario=current_user.id).first()
-    registro.conversa = registro.conversa + [nova_mensagem]
-    return registro
-
-
-async def menssagen_resposta(
-    Menssagem_schema: str, 
-    session: Session = Depends(pegar_sessao), 
-    current_user: Usuario = Depends(verificar_token)
-):
-    # Esta rota continua funcionando separadamente se precisar
-    nova_mensagem = {
-        "role": "assistant", 
-        "contudo": Menssagem_schema,
-        "enviado_em": datetime.now().isoformat()
-    } 
-    print(f"Mensagem da IA: {nova_mensagem}")
-
-    registro_conversa = session.query(Message).filter_by(id_usuario=current_user.id).first()
-    
-    if registro_conversa:
-        atualizar_conversa(nova_mensagem, current_user, session)
-    else:
-        novo_registro = Message(
-            id_usuario=current_user.id,
-            conversa=[nova_mensagem]
-        )
-        session.add(novo_registro)
-    
-    session.commit()
-
-    return {
-        "message": "Mensagem recebida e armazenada com sucesso!",
-        "role": "assistant", 
-        "conteudo": nova_mensagem["contudo"]
-    }
 
 @message_router.get("/")
-async def menssagens():
-    return {"message": "Rota de autenticação", "autenticado": False}
+async def mensagens():
+    return {"message": "Rota de mensagens", "autenticado": False}
 
 
 @message_router.post("/menssagens")
-async def menssagen_envio(
-    Menssagem_schema: MessageSchema, 
-    session: Session = Depends(pegar_sessao), 
-    current_user: Usuario = Depends(verificar_token)
+async def mensagen_envio(
+    mensagem: MessageSchema,
+    session: Session = Depends(pegar_sessao),
+    current_user: Optional[Usuario] = Depends(verificar_token_opcional),
+    anon_session_id: str = Depends(get_session_id)
 ):
-    # 1. Salva a mensagem do usuário
-    nova_mensagem = {
-        "role": "user", 
-        "contudo": Menssagem_schema.conteudo,
-        "enviado_em": datetime.now().isoformat()
-    } 
-    print(f"Mensagem do usuário: {nova_mensagem}")
-
-    registro_conversa = session.query(Message).filter_by(id_usuario=current_user.id).first()
-    
-    if registro_conversa:
-        atualizar_conversa(nova_mensagem, current_user, session)
+    # Determina filtro de busca
+    if current_user:
+        filtro = {"id_usuario": current_user.id}
     else:
-        novo_registro = Message(
-            id_usuario=current_user.id,
-            conversa=[nova_mensagem]
+        filtro = {"id_session": anon_session_id}
+
+    # Busca conversa existente ou cria nova
+    conversa_reg = session.query(Message).filter_by(**filtro).first()
+
+    if not conversa_reg:
+        conversa_reg = Message(
+            id_usuario=current_user.id if current_user else None,
+            id_session=None if current_user else anon_session_id,
+            # ✅ CORRIGIDO: conversa começa como lista vazia, não string
+            conversa=[],
+            criado_em=datetime.now()
         )
-        session.add(novo_registro)
-    
+        session.add(conversa_reg)
+        session.flush()  # garante que o objeto existe antes de modificar
+
+    # Monta os dois turnos do par user/assistant
+    novo_par = [
+        {
+            "role": "user",
+            "conteudo": mensagem.conteudo,
+            "criado_em": datetime.now().isoformat()
+        }
+    ]
+
+    # Chama o agente de IA
+    resposta = AzureFoundryLLM()._call(prompt=mensagem.conteudo)
+
+    novo_par.append({
+        "role": "assistant",
+        "conteudo": resposta,
+        "criado_em": datetime.now().isoformat()
+    })
+
+    # ✅ CORRIGIDO: garante que conversa_reg.conversa é lista antes de concatenar
+    historico_atual = conversa_reg.conversa if isinstance(conversa_reg.conversa, list) else []
+    conversa_reg.conversa = historico_atual + [novo_par]
+
     session.commit()
 
-    agente_resp = AzureFoundryLLM()._call(prompt=Menssagem_schema.conteudo)
+    return {"resposta": resposta}
 
-    # 3. Atualiza conversa com resposta da IA
-    resposta = await menssagen_resposta(
-        Menssagem_schema=agente_resp,
-        session=session,
-        current_user=current_user
-    )
-    return resposta
-    
-    
+
+@message_router.get("/historico")
+async def obter_historico_simples(
+    session: Session = Depends(pegar_sessao),
+    current_user: Optional[Usuario] = Depends(verificar_token_opcional),
+    anon_session_id: str = Depends(get_session_id)
+):
+    if current_user:
+        conversa = session.query(Message).filter_by(id_usuario=current_user.id).first()
+        usuario_nome = current_user.nome
+    else:
+        conversa = session.query(Message).filter_by(
+            id_session=anon_session_id,
+            id_usuario=None
+        ).first()
+        usuario_nome = None
+
+    if not conversa or not conversa.conversa:
+        return {
+            "mensagens": [],
+            "total": 0,
+            "autenticado": bool(current_user),
+            "usuario": usuario_nome
+        }
+
+    # ✅ Achata a lista de pares [[user,assistant], ...] em lista plana [user, assistant, ...]
+    # para o frontend não precisar lidar com aninhamento duplo
+    mensagens_planas = []
+    for par in conversa.conversa:
+        if isinstance(par, list):
+            mensagens_planas.extend(par)
+        else:
+            mensagens_planas.append(par)
+
+    return {
+        "mensagens": mensagens_planas,
+        "total": len(mensagens_planas),
+        "autenticado": bool(current_user),
+        "usuario": usuario_nome,
+        "ultima_atualizacao": conversa.criado_em.isoformat() if conversa.criado_em else None
+    }
+
+
+@message_router.get("/test-cookie")
+async def test_cookie(anon_session_id: str = Depends(get_session_id)):
+    return {
+        "session_id": anon_session_id,
+        "cookie_criado": True,
+        "mensagem": "Cookie está funcionando!"
+    }
