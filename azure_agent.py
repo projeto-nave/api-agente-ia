@@ -1,6 +1,7 @@
 from langchain_core.language_models import LLM
 from typing import Optional, List, Any
-
+import os
+from dotenv import load_dotenv
 
 # Antes de rodar:
 #    pip install azure-ai-projects>=2.1.0
@@ -8,10 +9,10 @@ from typing import Optional, List, Any
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 
-
+load_dotenv
 
 # Endpoint do seu projeto
-endpoint = "https://aih-anfitriao-prod-eastus-001.services.ai.azure.com/api/projects/aip-anfitriao-prod-001"
+endpoint = os.getenv("ENDPOINT_AZURE")
 
 # Cria o cliente do projeto
 project_client = AIProjectClient(

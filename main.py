@@ -50,8 +50,8 @@ async def log_cookies(request: Request, call_next):
 
 
 # ── Routers existentes ────────────────────────────────────────────────────────
-from auth_routes        import auth_router
-from message_routes import message_router
+from routes.auth_routes        import auth_router
+from routes.message_routes import message_router
 
 
 app.include_router(auth_router)
@@ -60,6 +60,12 @@ app.include_router(message_router)
 
 
 
+import os
+import uvicorn
 
+if __name__ == "__main__":
+    # A variável de ambiente PORT é injetada pelo Azure
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 # para executar: uvicorn main:app --reload
