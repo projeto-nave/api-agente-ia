@@ -52,11 +52,11 @@ async def log_cookies(request: Request, call_next):
 # ── Routers existentes ────────────────────────────────────────────────────────
 from auth_routes        import auth_router
 from message_routes import message_router
-from chat_routes import chat_router
+
 
 app.include_router(auth_router)
 app.include_router(message_router)
-app.include_router(chat_router)
+
 
 
 

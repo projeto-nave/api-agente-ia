@@ -1,14 +1,16 @@
 
 from pydantic import BaseModel
 from typing import Optional,List
+from datetime import datetime, date
 
 
 class Usuarioschema(BaseModel):
     nome: str
     email: str
     senha: str
-    ativo: Optional[bool]
-    admin: Optional[bool]
+    nascimento: Optional [date]
+    ativo: Optional[bool] = True
+    admin: Optional[bool] = False
 
     class Config:
         from_attributes = True
@@ -25,26 +27,6 @@ class LoguinSchema(BaseModel):
 # Adicione também este import no topo: from datetime import datetime
 # ══════════════════════════════════════════════════════════════════════════════
 
-from datetime import datetime
-
-
-# ─── Consent ─────────────────────────────────────────────────────────────────
-
-class ConsentCreateSchema(BaseModel):
-    permissao: str   # ex: "web_search", "send_email", "read_calendar"
-
-    class Config:
-        from_attributes = True
-
-
-class ConsentResponseSchema(ConsentCreateSchema):
-    id:         int
-    id_usuario: int
-    ativo:      bool
-    criado_em:  datetime
-
-    class Config:
-        from_attributes = True
 
 
 # ─── Message ─────────────────────────────────────────────────────────────────

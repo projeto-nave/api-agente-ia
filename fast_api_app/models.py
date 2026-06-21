@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from sqlalchemy import Column, create_engine, Integer, String, Boolean,Float, ForeignKey, Text, DateTime,JSON,Date
+from sqlalchemy import Column, create_engine, Integer, String, Boolean,Float, ForeignKey, Text, DateTime,JSON,Date, text, inspect
 from sqlalchemy.orm import declarative_base
 from datetime import datetime, timezone
 # ══════════════════════════════════════════════════════════════════════════════
@@ -9,9 +9,31 @@ from datetime import datetime, timezone
 #
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
-DB = create_engine(DATABASE_URL)
+#Novo-BD-Nicole:mysql-anfitriao-prod-001.mysql.database.azure.com
+DB = create_engine(DATABASE_URL,echo=True)
+#DB = create_engine(url_conexao, echo=True)
+# Testando a conexão
+with DB.connect() as conn:
+    resultado = conn.execute(text("SHOW TABLES"))
+    tabelas = resultado.fetchall()
+    print("\nTabelas (via SQL SHOW TABLES):")
+    for (tabela_nome,) in tabelas:
+        print(f"- {tabela_nome}")
+
+with DB.connect() as conn:
+    inspector = inspect(conn)
+    
+    # Lista todas as tabelas e suas colunas
+    for tabela in inspector.get_table_names():
+        print(f"\n📋 Tabela: {tabela}")
+        colunas = inspector.get_columns(tabela)
+        for coluna in colunas:
+            print(f"  ├─ {coluna['name']} ({coluna['type']})")
+ 
+
 print(f"DATABASE_URL carregada: {DATABASE_URL}")
 Base = declarative_base()
 
@@ -24,32 +46,17 @@ class Usuario(Base):
     email = Column("email",String(100),nullable=False, unique=True)
     senha = Column("senha",String(100),nullable=False)
     nascimento = Column("nascimento",Date,nullable=False)
-    ativo = Column("ativo",Boolean, default=True)
-    admin = Column("admin",Boolean, default=False)
+    status = Column("status",String(50), default="ativo")
+    criado_em  = Column("criado_em",  DateTime, default= datetime.now(timezone.utc))
 
-    def __init__(self,nome,email,senha,ativo=True,admin=False):
+    def __init__(self,nome,email,senha,criado_em,nascimento = None,status="ativo"):
         self.nome = nome
         self.email = email
         self.senha = senha
-        self.ativo = ativo
-        self.admin = admin
+        self.nascimento = nascimento
+        self.status = status
+        self.criado_em = criado_em
         
-# ─── Consent ──────────────────────────────────────────────────────────────────
-class Consent(Base):
-    """Permissões do agente de IA concedidas por usuário."""
-    __tablename__ = "consents"
-
-    id          = Column("id",         Integer, primary_key=True, autoincrement=True)
-    id_usuario  = Column("id_usuario", ForeignKey("usuarios.id"), nullable=False)
-    permissao   = Column("permissao",  String(100),  nullable=False)   # ex: "web_search", "send_email"
-    ativo       = Column("ativo",      Boolean, default=True)
-    criado_em   = Column("criado_em",  DateTime, default=lambda: datetime.now(timezone.utc))
-
-    def __init__(self, id_usuario, permissao, ativo=True):
-        self.id_usuario = id_usuario
-        self.permissao  = permissao
-        self.ativo      = ativo
-
 
 # ─── Message ──────────────────────────────────────────────────────────────────
 class Message(Base):
@@ -67,3 +74,7 @@ class Message(Base):
         self.id_session = id_session
         self.conversa   = conversa
         self.criado_em  = criado_em
+
+
+Base.metadata.create_all(DB, checkfirst=True)
+print("✅ Tabelas verificadas/criadas com sucesso!")
