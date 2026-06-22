@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 
-load_dotenv
+load_dotenv()
 
 # Endpoint do seu projeto
 endpoint = os.getenv("ENDPOINT_AZURE")
