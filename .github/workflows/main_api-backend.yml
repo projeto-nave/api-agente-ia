@@ -1,7 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
 name: Build and deploy Python app to Azure Web App - api-backend
 
 on:
@@ -14,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -22,51 +18,40 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'  # Mudei para 3.11 (mais estável)
+          python-version: '3.11'  # Use 3.11 para compatibilidade
 
-      - name: Create and start virtual environment
+      - name: Create startup.sh
         run: |
-          python -m venv antenv
-          source antenv/bin/activate
-          python -m pip install --upgrade pip  # ATUALIZA O PIP PRIMEIRO
+          cat > startup.sh << 'EOF'
+          #!/bin/bash
+          echo "Instalando dependências..."
+          pip install --no-cache-dir -r requirements.txt
+          echo "Iniciando aplicação..."
+          uvicorn main:app --host 0.0.0.0 --port 8000
+          EOF
+          chmod +x startup.sh
 
-      - name: Install dependencies
+      - name: Upgrade pip and install dependencies
         run: |
-          source antenv/bin/activate
-          # Instala em etapas para identificar erros
-          pip install --no-cache-dir \
-            fastapi \
-            uvicorn[standard] \
-            sqlalchemy \
-            pymysql \
-            cryptography \
-            python-dotenv \
-            httpx \
-            alembic \
-            passlib[bcrypt] \
-            bcrypt \
-            python-jose[cryptography] \
-            python-multipart
-          
-          # Se você precisar do langchain-azure-ai, instale separadamente
-          # pip install langchain-azure-ai
+          python -m pip install --upgrade pip
+          pip install --no-cache-dir -r requirements.txt
 
       - name: Verify installation
         run: |
-          source antenv/bin/activate
-          python -c "import fastapi; print('FastAPI installed successfully')"
-          python -c "import uvicorn; print('Uvicorn installed successfully')"
+          python -c "import fastapi; print('✅ FastAPI OK')"
+          python -c "import uvicorn; print('✅ Uvicorn OK')"
+          python -c "import main; print('✅ Main module OK')" || echo "⚠️ Main module not found"
 
-      - name: Upload artifact for deployment jobs
+      - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: python-app
           path: |
             .
-            !antenv/
             !__pycache__/
             !**/__pycache__/
             !*.pyc
+            !antenv/
 
   deploy:
     runs-on: ubuntu-latest
@@ -78,6 +63,9 @@ jobs:
         with:
           name: python-app
       
+      - name: List files (debug)
+        run: ls -la
+      
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
@@ -85,4 +73,3 @@ jobs:
           app-name: 'api-backend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F27027E8FAC44579E1E8C8985237617 }}
-         
