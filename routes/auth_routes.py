@@ -53,8 +53,8 @@ async def criar_usuario(usurio_schemas: Usuarioschema, session: Session = Depend
         email=usurio_schemas.email,
         senha=senha_criptografada,
         nascimento=usurio_schemas.nascimento,
-        ativo=usurio_schemas.ativo,
-        admin=usurio_schemas.admin,
+        status=usurio_schemas.status,
+        criado_em=usurio_schemas.criado_em,
     )
     session.add(novo_usuario)
     session.commit()

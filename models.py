@@ -16,7 +16,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 DB = create_engine(DATABASE_URL,echo=True)
 #DB = create_engine(url_conexao, echo=True)
 # Testando a conexão
-with DB.connect() as conn:
+""" with DB.connect() as conn:
     resultado = conn.execute(text("SHOW TABLES"))
     tabelas = resultado.fetchall()
     print("\nTabelas (via SQL SHOW TABLES):")
@@ -33,7 +33,7 @@ with DB.connect() as conn:
         for coluna in colunas:
             print(f"  ├─ {coluna['name']} ({coluna['type']})")
  
-
+ """
 print(f"DATABASE_URL carregada: {DATABASE_URL}")
 Base = declarative_base()
 

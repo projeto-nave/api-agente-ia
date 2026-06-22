@@ -8,9 +8,9 @@ class Usuarioschema(BaseModel):
     nome: str
     email: str
     senha: str
-    nascimento: Optional [date]
-    ativo: Optional[bool] = True
-    admin: Optional[bool] = False
+    nascimento: date
+    status: str = 'ativo'
+    criado_em : datetime=datetime.now()
 
     class Config:
         from_attributes = True

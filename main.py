@@ -65,7 +65,7 @@ import uvicorn
 
 if __name__ == "__main__":
     # A variável de ambiente PORT é injetada pelo Azure
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 6000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 # para executar: uvicorn main:app --reload
