@@ -85,5 +85,4 @@ jobs:
           app-name: 'api-backend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F27027E8FAC44579E1E8C8985237617 }}
-          # Adiciona comando de startup
-          startup-command: 'uvicorn main:app --host 0.0.0.0 --port 8000'
+         
