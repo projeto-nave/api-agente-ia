@@ -50,12 +50,14 @@ openai_client = project_client.get_openai_client()
 def criar_conversa(user_info:Optional[Usuario]):
     if user_info == None :
         texto = "não á usuario cadastrado trate o usuario como visitante"
+        apresentacao = "Olá! Sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
     else:
-        texto =f"esses são os dados do usuario autenticado nome:{user_info.nome}, email:{user_info.email}, nascimento:{user_info.nascimento}"
+        texto =f"esses são os dados do usuario autenticado nome:{str.capitalize(user_info.nome)}, email:{user_info.email}, nascimento:{user_info.nascimento}"
+        apresentacao = f"Oi {user_info.nome}! Para caso ainda não me conheça, eu sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
         
     conversation = openai_client.conversations.create(
         items=[{"type": "message", "role": "system", "content": f"{texto} se limite a estes dados, quando for responder o usuario ou visitante "},
-               {"type": "message", "role": "assistant", "content": "Olá! Sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"}]
+               {"type": "message", "role": "assistant", "content": f"{apresentacao}"}]
     
     )
     conversation_id = conversation.id

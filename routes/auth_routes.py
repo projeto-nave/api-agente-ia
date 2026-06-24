@@ -49,7 +49,7 @@ async def criar_usuario(usurio_schemas: Usuarioschema, session: Session = Depend
     # O limite de 72 bytes do bcrypt é sobre a SENHA de entrada, não sobre
     # o hash de saída — e o passlib já cuida disso internamente.
     novo_usuario = Usuario(
-        nome=usurio_schemas.nome,
+        nome=str.capitalize(usurio_schemas.nome),
         email=usurio_schemas.email,
         senha=senha_criptografada,
         nascimento=usurio_schemas.nascimento,

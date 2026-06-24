@@ -36,6 +36,10 @@ async def mensagen_envio(
 
     # Busca conversa existente ou cria nova
     conversa_reg = session.query(Message).filter_by(**filtro).first()
+    if current_user:
+        apresentacao = f"Oi {current_user.nome}! Para caso ainda não me conheça, eu sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
+    else:
+        apresentacao = "Olá! Sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
 
     if not conversa_reg:
         conversa_reg = Message(
@@ -43,7 +47,7 @@ async def mensagen_envio(
             id_session=None if current_user else anon_session_id,
             id_conversa=criar_conversa(current_user if current_user else None),
             conversa=[{"role": "assistant",
-            "conteudo": "Olá! Sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?",
+            "conteudo": apresentacao,
             "criado_em": datetime.now().isoformat()}],
             criado_em=datetime.now()
         )
