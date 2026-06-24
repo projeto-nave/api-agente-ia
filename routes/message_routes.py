@@ -42,7 +42,9 @@ async def mensagen_envio(
             id_usuario=current_user.id if current_user else None,
             id_session=None if current_user else anon_session_id,
             id_conversa=criar_conversa(current_user if current_user else None),
-            conversa=[],
+            conversa=[{"role": "assistant",
+            "conteudo": "Olá! Sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?",
+            "criado_em": datetime.now().isoformat()}],
             criado_em=datetime.now()
         )
         session.add(conversa_reg)
