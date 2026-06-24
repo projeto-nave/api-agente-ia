@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
-from fast_api_app.models import Base  # Importe o Base do seu models.py
+from models import Base  # Importe o Base do seu models.py
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 

@@ -62,7 +62,7 @@ def upgrade() -> None:
     op.drop_index(op.f('id_usuario'), table_name='sap_frequentador')
     op.drop_table('sap_frequentador')
     op.drop_table('sap_inscricao_evento') """
-    op.drop_table('sap_messages')
+    #op.drop_table('sap_messages')
     op.add_column('usuarios', sa.Column('criado_em', sa.DateTime(), nullable=True))
     op.drop_column('usuarios', 'admin')
     # ### end Alembic commands ###

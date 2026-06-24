@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
-#Novo-BD-Nicole:mysql-anfitriao-prod-001.mysql.database.azure.com
+
 DB = create_engine(DATABASE_URL,echo=True)
 #DB = create_engine(url_conexao, echo=True)
 # Testando a conexão
@@ -66,12 +66,14 @@ class Message(Base):
     id         = Column("id",         Integer, primary_key=True, autoincrement=True)
     id_usuario = Column("id_usuario", ForeignKey("usuarios.id"), nullable=True)
     id_session = Column("id_visitante",String(36), nullable=True )
+    id_conversa = Column("id_conversa",String(100),nullable=True)
     conversa   = Column("conversa",   JSON,    nullable=False)
     criado_em  = Column("criado_em",  DateTime, default= datetime.now(timezone.utc))
 
-    def __init__(self, id_usuario, conversa,id_session,criado_em):
+    def __init__(self, id_usuario, conversa,id_session,id_conversa,criado_em):
         self.id_usuario = id_usuario
         self.id_session = id_session
+        self.id_conversa= id_conversa
         self.conversa   = conversa
         self.criado_em  = criado_em
 

@@ -2,6 +2,7 @@ from langchain_core.language_models import LLM
 from typing import Optional, List, Any
 import os
 from dotenv import load_dotenv
+from models import Usuario
 
 # Antes de rodar:
 #    pip install azure-ai-projects>=2.1.0
@@ -29,7 +30,8 @@ openai_client = project_client.get_openai_client()
 
 #SDK
 # Enviar mensagem para o agente (histórico é mantido automaticamente)
-""" response = openai_client.responses.create(
+""" 
+    response = openai_client.responses.create(
     input=[{"role": "user", "content": f""}],
     extra_body={
         "agent_reference": {
@@ -45,20 +47,48 @@ openai_client = project_client.get_openai_client()
 
 # Seu cliente já inicializado
 # langchain
+def criar_conversa(user_info:Optional[Usuario]):
+    if user_info == None :
+        texto = "não á usuario cadastrado trate o usuario como visitante"
+    else:
+        texto =f"esses são os dados do usuario autenticado nome:{user_info.nome}, email:{user_info.email}, nascimento:{user_info.nascimento} "
+        
+    conversation = openai_client.conversations.create(
+        items=[{"type": "message", "role": "system", "content": f"{texto} se limite a estes dados, quando for responder o usuario ou visitante "}]
+    )
+    conversation_id = conversation.id
+    print(texto)
+    return conversation_id
+
 
 class AzureFoundryLLM(LLM):
+    conversation_id:str
+
     def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
+        pergunta = openai_client.conversations.items.create(
+            conversation_id= self.conversation_id,
+            items=[{"type": "message", "role":"user","content":prompt}]
+        )
+
+
         response = openai_client.responses.create(
-            input=[{"role": "user", "content": prompt}],
+            conversation= self.conversation_id,
             extra_body={
                 "agent_reference": {
                     "name": "Anfitriao",
-                    "version": "5",
                     "type": "agent_reference"
                 }
-            },
+            }
+            
+        )
+        pergunta = openai_client.conversations.items.create(
+            conversation_id= self.conversation_id,
+            items=[{"type": "message", "role":"assistant","content":response.output_text}]
         )
         output = response.output_text
+        print(openai_client.conversations.retrieve(
+            conversation_id= self.conversation_id
+        ))
         return output
 
     @property

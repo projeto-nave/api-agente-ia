@@ -5,7 +5,7 @@ from schemas import MessageSchema
 from models import Message, Usuario
 from sqlalchemy.orm import Session
 from datetime import datetime
-from azure_agent import AzureFoundryLLM
+from azure_agent import criar_conversa,AzureFoundryLLM
 from typing import Optional
 
 message_router = APIRouter(
@@ -32,6 +32,7 @@ async def mensagen_envio(
         filtro = {"id_usuario": current_user.id}
     else:
         filtro = {"id_session": anon_session_id}
+        
 
     # Busca conversa existente ou cria nova
     conversa_reg = session.query(Message).filter_by(**filtro).first()
@@ -40,7 +41,7 @@ async def mensagen_envio(
         conversa_reg = Message(
             id_usuario=current_user.id if current_user else None,
             id_session=None if current_user else anon_session_id,
-            # ✅ CORRIGIDO: conversa começa como lista vazia, não string
+            id_conversa=criar_conversa(current_user if current_user else None),
             conversa=[],
             criado_em=datetime.now()
         )
@@ -57,7 +58,12 @@ async def mensagen_envio(
     ]
 
     # Chama o agente de IA
-    resposta = AzureFoundryLLM()._call(prompt=mensagem.conteudo)
+    print(str(current_user))
+    if conversa_reg.id_conversa == None:
+        conversa_reg.id_conversa = criar_conversa(current_user if current_user else None) 
+
+    llm = AzureFoundryLLM(conversation_id= str(conversa_reg.id_conversa))
+    resposta = llm._call(prompt=mensagem.conteudo)
 
     novo_par.append({
         "role": "assistant",
