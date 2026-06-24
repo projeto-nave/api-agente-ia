@@ -60,7 +60,7 @@ def criar_conversa(user_info:Optional[Usuario]):
     )
     conversation_id = conversation.id
 
-    print(texto)
+    #print(texto)
     return conversation_id
 
 
@@ -73,12 +73,18 @@ class AzureFoundryLLM(LLM):
             items=[{"type": "message", "role":"user","content":prompt}]
         )
 
+        agent = project_client.agents.get(
+            agent_name= "Anfitriao",
+        )
+        agent_version=agent.versions.latest.version
+        
 
         response = openai_client.responses.create(
             conversation= self.conversation_id,
             extra_body={
                 "agent_reference": {
                     "name": "Anfitriao",
+                    "version" : agent_version,
                     "type": "agent_reference"
                 }
             }
@@ -89,9 +95,11 @@ class AzureFoundryLLM(LLM):
             items=[{"type": "message", "role":"assistant","content":response.output_text}]
         )
         output = response.output_text
-        print(openai_client.conversations.retrieve(
-            conversation_id= self.conversation_id
-        ))
+        
+        #print(openai_client.conversations.retrieve(conversation_id= self.conversation_id))
+        
+        
+        
         return output
 
     @property
