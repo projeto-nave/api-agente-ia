@@ -50,7 +50,7 @@ openai_client = project_client.get_openai_client()
 def criar_conversa(user_info:Optional[Usuario]):
     if user_info == None :
         texto = "não á usuario cadastrado trate o usuario como visitante"
-        apresentacao = "Olá! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a encontrar informações, conhecer os recursos das Naves do Conhecimento e esclarecer dúvidas sobre os serviços disponíveis. Como posso ajudar você hoje?"
+        apresentacao = "Olá! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a encontrar informações sobre os recursos das Naves e esclarecer dúvidas sobre os serviços disponíveis. Como posso ajudar você hoje?"
     else:
         texto =f"esses são os dados do usuario autenticado nome:{str.capitalize(user_info.nome)}, email:{user_info.email}, nascimento:{user_info.nascimento}"
         apresentacao = f"Olá, {user_info.nome}! Sou Nicole, sua assistente virtual de inteligência artificial e sua astronauta guia nesta jornada pelas Naves do Conhecimento. Estou aqui para ajudar você a decolar nos recursos da Nave.Como posso ajudar você hoje?"
