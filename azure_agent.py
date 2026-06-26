@@ -3,7 +3,7 @@ from typing import Optional, List, Any
 import os
 from dotenv import load_dotenv
 from models import Usuario
-
+import markdown
 # Antes de rodar:
 #    pip install azure-ai-projects>=2.1.0
 
@@ -50,10 +50,10 @@ openai_client = project_client.get_openai_client()
 def criar_conversa(user_info:Optional[Usuario]):
     if user_info == None :
         texto = "não á usuario cadastrado trate o usuario como visitante"
-        apresentacao = "Olá! Sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
+        apresentacao = "Olá! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a encontrar informações, conhecer os recursos das Naves do Conhecimento e esclarecer dúvidas sobre os serviços disponíveis. Como posso ajudar você hoje?"
     else:
         texto =f"esses são os dados do usuario autenticado nome:{str.capitalize(user_info.nome)}, email:{user_info.email}, nascimento:{user_info.nascimento}"
-        apresentacao = f"Oi {user_info.nome}! Para caso ainda não me conheça, eu sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
+        apresentacao = f"Olá, {user_info.nome}! Sou Nicole, sua assistente virtual de inteligência artificial e sua astronauta guia nesta jornada pelas Naves do Conhecimento. Estou aqui para ajudar você a decolar nos recursos da Nave.Como posso ajudar você hoje?"
         
     conversation = openai_client.conversations.create(
         items=[{"type": "message", "role": "system", "content": f"{texto} se limite a estes dados, quando for responder o usuario ou visitante "},
@@ -92,11 +92,13 @@ class AzureFoundryLLM(LLM):
             }
             
         )
+
+        output = markdown.markdown(response.output_text)
+        
         pergunta = openai_client.conversations.items.create(
             conversation_id= self.conversation_id,
-            items=[{"type": "message", "role":"assistant","content":response.output_text}]
+            items=[{"type": "message", "role":"assistant","content":output}]
         )
-        output = response.output_text
         
         #print(openai_client.conversations.retrieve(conversation_id= self.conversation_id))
         

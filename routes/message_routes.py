@@ -7,12 +7,18 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from azure_agent import criar_conversa,AzureFoundryLLM
 from typing import Optional
+from dotenv import load_dotenv
+import azure.cognitiveservices.speech as speechsdk
+import os
+import requests
 
 message_router = APIRouter(
     prefix="/messages",
     tags=["messages"],
     dependencies=[Depends(verificar_token_opcional)]
 )
+
+
 
 
 @message_router.get("/")
@@ -37,9 +43,9 @@ async def mensagen_envio(
     # Busca conversa existente ou cria nova
     conversa_reg = session.query(Message).filter_by(**filtro).first()
     if current_user:
-        apresentacao = f"Oi {current_user.nome}! Para caso ainda não me conheça, eu sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
+        apresentacao = f"Olá, {current_user.nome}! Sou Nicole, sua assistente virtual de inteligência artificial e sua astronauta guia nesta jornada pelas Naves do Conhecimento. Estou aqui para ajudar você a decolar nos recursos da Nave.Como posso ajudar você hoje?"
     else:
-        apresentacao = "Olá! Sou Nicole, uma agente de inteligência artificial, que atuarei como a astronauta que posso te auxiliar a decolar nos recursos das Naves. O que posso te ajudar hoje?"
+        apresentacao = "Olá! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a encontrar informações, conhecer os recursos das Naves do Conhecimento e esclarecer dúvidas sobre os serviços disponíveis. Como posso ajudar você hoje?"
 
     if not conversa_reg:
         conversa_reg = Message(
@@ -135,3 +141,20 @@ async def test_cookie(anon_session_id: str = Depends(get_session_id)):
         "cookie_criado": True,
         "mensagem": "Cookie está funcionando!"
     }
+
+load_dotenv()
+
+AZURE_SPEECH_KEY = os.getenv("AZURE_SPEECH_KEY")
+AZURE_REGION = os.getenv("AZURE_REGION")
+AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+
+@message_router.get("/speech-token")
+def get_speech_token():
+    url = f"{AZURE_ENDPOINT}/sts/v1.0/issueToken"
+    headers = {
+        "Ocp-Apim-Subscription-Key": AZURE_SPEECH_KEY,
+        "Content-type": "application/x-www-form-urlencoded",
+        "Content-Length": "0"
+    }
+    r = requests.post(url, headers=headers)
+    return {"token": r.text, "region": "eastus"}

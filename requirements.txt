@@ -13,3 +13,5 @@ alembic
 langchain-azure-ai
 langchain-azure-ai[tools]
 langchain-azure-ai[opentelemetry]
+markdown
+azure-cognitiveservices-speech
