@@ -33,6 +33,8 @@ app.add_middleware(
         "http://localhost:8000",
         "http://127.0.0.1:8000",
         "https://projeto-nave.github.io"
+        "https://projeto-nave.github.io/POC/#"
+        "https://projeto-nave.github.io/POC/"
     ],
     allow_credentials=True,
     allow_methods=["*"],
