@@ -76,7 +76,7 @@ def get_session_id(
         max_age=60 * 60 * 24 * 30,  # 30 dias
         httponly=True,              # impede acesso via JS (mais seguro)
         secure=True,               # ⚠️ mude para True em produção com HTTPS
-        samesite="lax",
+        samesite=None,
         path="/",
         # ✅ CORRIGIDO: domain removido.
         # "domain=localhost" fazia o navegador descartar o cookie quando
