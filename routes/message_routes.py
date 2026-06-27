@@ -43,7 +43,7 @@ async def mensagen_envio(
     # Busca conversa existente ou cria nova
     conversa_reg = session.query(Message).filter_by(**filtro).first()
     if current_user:
-        apresentacao = f"Olá, {current_user.nome}! Sou Nicole, sua assistente virtual de inteligência artificial e sua astronauta guia nesta jornada pelas Naves do Conhecimento. Estou aqui para ajudar você a decolar nos recursos da Nave.Como posso ajudar você hoje?"
+        apresentacao = f"Olá, {current_user.nome}! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a decolar nos recursos das Naves. Como posso ajudar você hoje?"
     else:
         apresentacao = "Olá! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a encontrar informações sobre os recursos das Naves e esclarecer dúvidas sobre os serviços disponíveis. Como posso ajudar você hoje?"
 

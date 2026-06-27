@@ -53,7 +53,7 @@ def criar_conversa(user_info:Optional[Usuario]):
         apresentacao = "Olá! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a encontrar informações sobre os recursos das Naves e esclarecer dúvidas sobre os serviços disponíveis. Como posso ajudar você hoje?"
     else:
         texto =f"esses são os dados do usuario autenticado nome:{str.capitalize(user_info.nome)}, email:{user_info.email}, nascimento:{user_info.nascimento}"
-        apresentacao = f"Olá, {user_info.nome}! Sou Nicole, sua assistente virtual de inteligência artificial e sua astronauta guia nesta jornada pelas Naves do Conhecimento. Estou aqui para ajudar você a decolar nos recursos da Nave.Como posso ajudar você hoje?"
+        apresentacao = f"Olá, {user_info.nome}! Sou Nicole, sua assistente virtual de inteligência artificial. Estou aqui para ajudar você a decolar nos recursos das Naves. Como posso ajudar você hoje?"
         
     conversation = openai_client.conversations.create(
         items=[{"type": "message", "role": "system", "content": f"{texto} se limite a estes dados, quando for responder o usuario ou visitante "},
