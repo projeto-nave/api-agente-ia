@@ -75,7 +75,7 @@ def get_session_id(
         value=novo_id,
         max_age=60 * 60 * 24 * 30,  # 30 dias
         httponly=True,              # impede acesso via JS (mais seguro)
-        secure=False,               # ⚠️ mude para True em produção com HTTPS
+        secure=True,               # ⚠️ mude para True em produção com HTTPS
         samesite="lax",
         path="/",
         # ✅ CORRIGIDO: domain removido.
